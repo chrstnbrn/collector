@@ -1238,6 +1238,30 @@
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
   integrity sha512-OCutwjDZ4aFS6PB1UZ988C4YgwlBHJd6wCeQqaLdmadZ/7e+w79+hbMUFC1QXDNCmdyoRfAFdm0RypzwR+Qpag==
 
+"@types/gapi.auth2@^0.0.50":
+  version "0.0.50"
+  resolved "https://registry.yarnpkg.com/@types/gapi.auth2/-/gapi.auth2-0.0.50.tgz#f0631a288d44fc439b6744dbf66a4187b1189c91"
+  integrity sha512-yQe75u0GZZYGg1VLnnGAK4mpb1gJrTSNPCDncEBrVpMuWQY2etBgrdPFDeR5dDn9ntZCjmuD9bMptdxCke+1bQ==
+  dependencies:
+    "@types/gapi" "*"
+
+"@types/gapi.client.sheets@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/gapi.client.sheets/-/gapi.client.sheets-4.0.2.tgz#d7b0fcb055324498926eb363e95f1a5fda569c55"
+  integrity sha512-IENAxKdP8IF04R2fjLPIuuZvP2pglKNMGM3VZqswG6pnH6w6EmkiHYAMbNQtmiCTsTx5ChIBJKUCORNYPSQiPQ==
+  dependencies:
+    "@types/gapi.client" "*"
+
+"@types/gapi.client@*":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/gapi.client/-/gapi.client-1.0.1.tgz#620860ae183d849e513d44b4f0422c89b8a1fc91"
+  integrity sha512-/SjoU65jvBZlDQtw12OB9YCrqKQrrAdG4YpVTH4AJaJDCOkFdGXcDA2IFTm3d2UCeQwmqM/o6tNlyjKINO6MNg==
+
+"@types/gapi@*", "@types/gapi@^0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@types/gapi/-/gapi-0.0.39.tgz#bc7fa8cd0cb175b36e3609790fb2ed73a33f6881"
+  integrity sha512-R1TZeZbvvbIC60DBJMhuOEivQHzOQtzl3uMDOOENTYQTSSDB6oEMpJo8HVPOTWivdUTbyEcB5qQOVr/JCKRlCQ==
+
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.1.tgz#42995b446db9a48a11a07ec083499a860e9138ff"
