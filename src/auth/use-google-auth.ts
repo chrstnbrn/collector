@@ -11,7 +11,7 @@ export function useGoogleAuth(configuration: AuthConfiguration) {
         .init({
           clientId: configuration.clientId,
           discoveryDocs: configuration.discoveryDocs,
-          scope: configuration.scope
+          scope: configuration.scopes.join(' ')
         })
         .then(
           () => {

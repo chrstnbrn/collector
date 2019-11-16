@@ -16,13 +16,10 @@ import { Setup } from './Setup';
 export const App = () => {
   const [collection, setCollection] = useState<Collection | null>(null);
 
-  // Authorization scopes required by the API; multiple scopes can be
-  // included, separated by spaces.
-  const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
   const authConfiguration: AuthConfiguration = {
     clientId: settings.clientId,
     discoveryDocs: settings.discoveryDocs,
-    scope: SCOPES
+    scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly']
   };
   const { isSignedIn, signIn, signOut, getAccessToken } = useGoogleAuth(authConfiguration);
 
