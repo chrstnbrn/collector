@@ -19,7 +19,10 @@ export const App = () => {
   const authConfiguration: AuthConfiguration = {
     clientId: settings.clientId,
     discoveryDocs: settings.discoveryDocs,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly']
+    scopes: [
+      'https://www.googleapis.com/auth/spreadsheets.readonly',
+      'https://www.googleapis.com/auth/drive.file'
+    ]
   };
   const { isSignedIn, signIn, signOut, getAccessToken } = useGoogleAuth(authConfiguration);
 
@@ -35,7 +38,7 @@ export const App = () => {
       <Container maxWidth="lg">
         {isSignedIn ? (
           <div>
-            <Setup handleLoadData={loadData}></Setup>
+            <Setup accessToken={getAccessToken()} handleLoadData={loadData}></Setup>
             {collection ? <CollectionTable collection={collection}></CollectionTable> : null}
           </div>
         ) : (
