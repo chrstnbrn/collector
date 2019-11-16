@@ -3,16 +3,17 @@ import './App.css';
 import { Container } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 
-import { Entry } from '../models/entry';
+import { Collection } from '../models/collection';
 import settings from '../settings.json';
-import { Entries } from './Entries';
+import { loadCollection } from '../spreadsheet/load-collection';
+import { CollectionTable } from './CollectionTable';
 import { Header } from './Header';
 import { Login } from './Login';
 import { Setup } from './Setup';
 
 export const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [entries, setEntries] = useState<Entry[]>([]);
+  const [collection, setCollection] = useState<Collection | null>(null);
 
   useEffect(() => {
     // Authorization scopes required by the API; multiple scopes can be
@@ -54,47 +55,10 @@ export const App = () => {
     gapi.auth2.getAuthInstance().signOut();
   }
 
-  function loadData(spreadsheetId: string, spreadsheetName: string) {
+  async function loadData(spreadsheetId: string, spreadsheetName: string) {
     const accessToken = gapi.client.getToken().access_token;
-    loadSpreadsheetData(accessToken, spreadsheetId, spreadsheetName);
-  }
-
-  function loadSpreadsheetData(
-    accessToken: string,
-    spreadsheetId: string,
-    spreadsheetName: string
-  ) {
-    gapi.client.sheets.spreadsheets.values
-      .get({
-        spreadsheetId: spreadsheetId,
-        range: spreadsheetName,
-        access_token: accessToken
-      })
-      .then(
-        function(response) {
-          if (response.result.values) {
-            const [rowMetadata, ...rowData] = response.result.values as string[][];
-            const entries = rowData.map((row, index) => toEntry(row, rowMetadata, index));
-            setEntries(entries);
-          }
-        },
-        function(response) {
-          console.log(response);
-        }
-      );
-  }
-
-  function toEntry(rowData: string[], rowMetadata: string[], index: number): Entry {
-    const entry: Entry = {
-      id: index.toString()
-    };
-
-    rowData.forEach((value, index) => {
-      const key = rowMetadata[index];
-      entry[key] = value;
-    });
-
-    return entry;
+    const collection = await loadCollection(accessToken, spreadsheetId, spreadsheetName);
+    setCollection(collection);
   }
 
   return (
@@ -104,7 +68,7 @@ export const App = () => {
         {isSignedIn ? (
           <div>
             <Setup handleLoadData={loadData}></Setup>
-            <Entries entries={entries}></Entries>
+            {collection ? <CollectionTable collection={collection}></CollectionTable> : null}
           </div>
         ) : (
           <Login handleLogin={signIn}></Login>
