@@ -2,18 +2,20 @@ import './App.css';
 
 import React, { useEffect, useState } from 'react';
 
-import settings from './settings.json';
+import { Entry } from '../models/entry';
+import settings from '../settings.json';
+import { Entries } from './Entries';
+import { Login } from './Login';
+import { Setup } from './Setup';
 
-function App() {
+export const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [entries, setEntries] = useState<Entry[]>([]);
-  const [spreadsheetId, setSpreadsheetId] = useState('');
-  const [spreadsheetName, setSpreadsheetName] = useState('');
 
   useEffect(() => {
     // Authorization scopes required by the API; multiple scopes can be
     // included, separated by spaces.
-    const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
+    const SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly";
 
     function initClient() {
       gapi.client
@@ -39,7 +41,7 @@ function App() {
         );
     }
 
-    gapi.load('client:auth2', initClient);
+    gapi.load("client:auth2", initClient);
   }, []);
 
   function signIn() {
@@ -50,7 +52,7 @@ function App() {
     gapi.auth2.getAuthInstance().signOut();
   }
 
-  function loadData() {
+  function loadData(spreadsheetId: string, spreadsheetName: string) {
     const accessToken = gapi.client.getToken().access_token;
     loadSpreadsheetData(accessToken, spreadsheetId, spreadsheetName);
   }
@@ -69,8 +71,11 @@ function App() {
       .then(
         function(response) {
           if (response.result.values) {
-            const [rowMetadata, ...rowData] = response.result.values as string[][];
-            const entries = rowData.map((row, index) => toEntry(row, rowMetadata, index));
+            const [rowMetadata, ...rowData] = response.result
+              .values as string[][];
+            const entries = rowData.map((row, index) =>
+              toEntry(row, rowMetadata, index)
+            );
             setEntries(entries);
           }
         },
@@ -80,7 +85,11 @@ function App() {
       );
   }
 
-  function toEntry(rowData: string[], rowMetadata: string[], index: number): Entry {
+  function toEntry(
+    rowData: string[],
+    rowMetadata: string[],
+    index: number
+  ): Entry {
     const entry: Entry = {
       id: index.toString()
     };
@@ -95,47 +104,15 @@ function App() {
 
   return (
     <div className="App">
-      <button style={{ display: isSignedIn ? 'none' : 'block' }} onClick={signIn}>
-        Authorize
-      </button>
-      <button style={{ display: isSignedIn ? 'block' : 'none' }} onClick={signOut}>
-        Sign Out
-      </button>
       {isSignedIn ? (
         <div>
-          <label>
-            Spreadsheet Id:
-            <input
-              type="text"
-              value={spreadsheetId}
-              onChange={event => setSpreadsheetId(event.target.value)}
-            />
-          </label>
-          <label>
-            Spreadsheet Name:
-            <input
-              type="text"
-              value={spreadsheetName}
-              onChange={event => setSpreadsheetName(event.target.value)}
-            />
-          </label>
-          <button type="button" onClick={loadData}>
-            Load Data
-          </button>
-          {entries.map(entry => (
-            <div key={entry.id}>{entry.Name}</div>
-          ))}
+          <Setup handleLoadData={loadData}></Setup>
+          <Entries entries={entries}></Entries>
+          <button onClick={signOut}>Sign Out</button>
         </div>
       ) : (
-        ''
+        <Login handleLogin={signIn}></Login>
       )}
     </div>
   );
-}
-
-export default App;
-
-interface Entry {
-  id: string;
-  [key: string]: string;
-}
+};
