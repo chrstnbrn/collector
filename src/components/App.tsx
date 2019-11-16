@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Entry } from '../models/entry';
 import settings from '../settings.json';
 import { Entries } from './Entries';
+import { Header } from './Header';
 import { Login } from './Login';
 import { Setup } from './Setup';
 
@@ -15,7 +16,7 @@ export const App = () => {
   useEffect(() => {
     // Authorization scopes required by the API; multiple scopes can be
     // included, separated by spaces.
-    const SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly";
+    const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
 
     function initClient() {
       gapi.client
@@ -41,7 +42,7 @@ export const App = () => {
         );
     }
 
-    gapi.load("client:auth2", initClient);
+    gapi.load('client:auth2', initClient);
   }, []);
 
   function signIn() {
@@ -71,11 +72,8 @@ export const App = () => {
       .then(
         function(response) {
           if (response.result.values) {
-            const [rowMetadata, ...rowData] = response.result
-              .values as string[][];
-            const entries = rowData.map((row, index) =>
-              toEntry(row, rowMetadata, index)
-            );
+            const [rowMetadata, ...rowData] = response.result.values as string[][];
+            const entries = rowData.map((row, index) => toEntry(row, rowMetadata, index));
             setEntries(entries);
           }
         },
@@ -85,11 +83,7 @@ export const App = () => {
       );
   }
 
-  function toEntry(
-    rowData: string[],
-    rowMetadata: string[],
-    index: number
-  ): Entry {
+  function toEntry(rowData: string[], rowMetadata: string[], index: number): Entry {
     const entry: Entry = {
       id: index.toString()
     };
@@ -104,11 +98,11 @@ export const App = () => {
 
   return (
     <div className="App">
+      <Header isLoggedIn={isSignedIn} handleLogin={signIn} handleLogout={signOut}></Header>
       {isSignedIn ? (
         <div>
           <Setup handleLoadData={loadData}></Setup>
           <Entries entries={entries}></Entries>
-          <button onClick={signOut}>Sign Out</button>
         </div>
       ) : (
         <Login handleLogin={signIn}></Login>

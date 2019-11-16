@@ -9,8 +9,6 @@ export const Login = (props: LoginProps) => {
   );
 };
 
-export default Login;
-
 interface LoginProps {
   handleLogin: () => void;
 }
