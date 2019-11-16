@@ -1,8 +1,10 @@
 import './App.css';
 
 import { Container } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
+import { AuthConfiguration } from '../auth/auth-configuration';
+import { useGoogleAuth } from '../auth/use-google-auth';
 import { Collection } from '../models/collection';
 import settings from '../settings.json';
 import { loadCollection } from '../spreadsheet/load-collection';
@@ -12,51 +14,20 @@ import { Login } from './Login';
 import { Setup } from './Setup';
 
 export const App = () => {
-  const [isSignedIn, setIsSignedIn] = useState(false);
   const [collection, setCollection] = useState<Collection | null>(null);
 
-  useEffect(() => {
-    // Authorization scopes required by the API; multiple scopes can be
-    // included, separated by spaces.
-    const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
-
-    function initClient() {
-      gapi.client
-        .init({
-          clientId: settings.clientId,
-          discoveryDocs: settings.discoveryDocs,
-          scope: SCOPES
-        })
-        .then(
-          function() {
-            // Listen for sign-in state changes.
-            gapi.auth2
-              .getAuthInstance()
-              .isSignedIn.listen(signInState => setIsSignedIn(signInState));
-
-            // Handle the initial sign-in state.
-            const signInState = gapi.auth2.getAuthInstance().isSignedIn.get();
-            setIsSignedIn(signInState);
-          },
-          function(error) {
-            console.log(error);
-          }
-        );
-    }
-
-    gapi.load('client:auth2', initClient);
-  }, []);
-
-  function signIn() {
-    gapi.auth2.getAuthInstance().signIn();
-  }
-
-  function signOut() {
-    gapi.auth2.getAuthInstance().signOut();
-  }
+  // Authorization scopes required by the API; multiple scopes can be
+  // included, separated by spaces.
+  const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
+  const authConfiguration: AuthConfiguration = {
+    clientId: settings.clientId,
+    discoveryDocs: settings.discoveryDocs,
+    scope: SCOPES
+  };
+  const { isSignedIn, signIn, signOut, getAccessToken } = useGoogleAuth(authConfiguration);
 
   async function loadData(spreadsheetId: string, spreadsheetName: string) {
-    const accessToken = gapi.client.getToken().access_token;
+    const accessToken = getAccessToken();
     const collection = await loadCollection(accessToken, spreadsheetId, spreadsheetName);
     setCollection(collection);
   }
