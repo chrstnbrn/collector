@@ -1,5 +1,6 @@
 import './App.css';
 
+import { Container } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 
 import { Entry } from '../models/entry';
@@ -99,14 +100,16 @@ export const App = () => {
   return (
     <div className="App">
       <Header isLoggedIn={isSignedIn} handleLogin={signIn} handleLogout={signOut}></Header>
-      {isSignedIn ? (
-        <div>
-          <Setup handleLoadData={loadData}></Setup>
-          <Entries entries={entries}></Entries>
-        </div>
-      ) : (
-        <Login handleLogin={signIn}></Login>
-      )}
+      <Container maxWidth="lg">
+        {isSignedIn ? (
+          <div>
+            <Setup handleLoadData={loadData}></Setup>
+            <Entries entries={entries}></Entries>
+          </div>
+        ) : (
+          <Login handleLogin={signIn}></Login>
+        )}
+      </Container>
     </div>
   );
 };

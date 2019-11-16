@@ -1,30 +1,57 @@
+import { Button, makeStyles, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  textField: {
+    display: 'flex',
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    maxWidth: 400
+  },
+  button: {
+    marginTop: theme.spacing(3),
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1)
+  }
+}));
 
 export const Setup = (props: SetupProps) => {
   const [spreadsheetId, setSpreadsheetId] = useState('');
   const [spreadsheetName, setSpreadsheetName] = useState('');
+  const classes = useStyles();
 
   return (
     <div>
-      <label>
-        Spreadsheet Id:
-        <input
-          type="text"
-          value={spreadsheetId}
-          onChange={event => setSpreadsheetId(event.target.value)}
-        />
-      </label>
-      <label>
-        Spreadsheet Name:
-        <input
-          type="text"
-          value={spreadsheetName}
-          onChange={event => setSpreadsheetName(event.target.value)}
-        />
-      </label>
-      <button type="button" onClick={() => props.handleLoadData(spreadsheetId, spreadsheetName)}>
+      <TextField
+        id="spreadsheet-id"
+        className={classes.textField}
+        label="Spreadsheet Id"
+        margin="normal"
+        variant="filled"
+        value={spreadsheetId}
+        onChange={event => setSpreadsheetId(event.target.value)}
+      />
+      <TextField
+        id="spreadsheet-name"
+        className={classes.textField}
+        label="Spreadsheet Name"
+        margin="normal"
+        variant="filled"
+        value={spreadsheetName}
+        onChange={event => setSpreadsheetName(event.target.value)}
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        className={classes.button}
+        onClick={() => props.handleLoadData(spreadsheetId, spreadsheetName)}
+      >
         Load Data
-      </button>
+      </Button>
     </div>
   );
 };
