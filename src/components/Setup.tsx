@@ -8,14 +8,11 @@ const useStyles = makeStyles(theme => ({
   },
   textField: {
     display: 'flex',
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
     maxWidth: 400
   },
   button: {
     marginTop: theme.spacing(3),
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1)
+    marginBottom: theme.spacing(5)
   }
 }));
 
