@@ -16,7 +16,9 @@ export async function loadCollection(
     throw new Error('No values');
   }
 
-  const [rowMetadata, ...rowData] = response.result.values;
+  const nonEmptyRows = response.result.values.filter(row => row && row.length > 0);
+
+  const [rowMetadata, ...rowData] = nonEmptyRows;
   const entries = rowData.map((row, index) => toEntry(row, rowMetadata, index));
 
   return {
