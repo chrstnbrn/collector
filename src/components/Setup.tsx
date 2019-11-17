@@ -1,4 +1,4 @@
-import { Button, FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core';
+import { Button, FormControl, InputLabel, makeStyles, MenuItem, Select, Step, StepContent, StepLabel, Stepper } from '@material-ui/core';
 import React, { useState } from 'react';
 
 import { DriveFile } from '../models/drive-file';
@@ -19,26 +19,41 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 400
   },
   button: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(5)
+    marginTop: theme.spacing(3)
   }
 }));
 
+function getSteps() {
+  return ['Select spreadsheet', 'Select sheet', 'Configure table'];
+}
+
 export const Setup = (props: SetupProps) => {
+  const classes = useStyles();
+
   const [file, setFile] = useState<DriveFile | null>(null);
   const [spreadsheetName, setSpreadsheetName] = useState('');
   const [availableSheetNames, setAvailableSheetNames] = useState<string[]>([]);
-  const classes = useStyles();
+  const [activeStep, setActiveStep] = React.useState(0);
+  const steps = getSteps();
+
+  const handleNext = () => {
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
+  };
 
   async function handleSelectFile(file: DriveFile) {
     setFile(file);
     loadSpreadsheetMetadata(file.id);
+    handleNext();
+  }
+
+  function handleSelectSpreadsheet(name: string) {
+    setSpreadsheetName(name);
+    handleNext();
   }
 
   async function loadSpreadsheetMetadata(spreadsheetId: string) {
     const sheetNames = await getSheetNames(spreadsheetId);
     setAvailableSheetNames(sheetNames);
-    setSpreadsheetName(sheetNames[0]);
   }
 
   async function getSheetNames(spreadsheetId: string) {
@@ -58,26 +73,46 @@ export const Setup = (props: SetupProps) => {
     }
   }
 
-  return (
-    <div>
-      <h2>Create Collection</h2>
-      <h3>Select a file</h3>
-      <FilePicker accessToken={props.accessToken} handleSelectFile={handleSelectFile}></FilePicker>
-      {file ? (
-        <div className={classes.file}>
-          <img src={file.iconUrl} className={classes.fileIcon}></img>
-          {file.name}
-        </div>
-      ) : null}
-      <h3>Choose sheet</h3>
+  function getStepContent(step: number) {
+    switch (step) {
+      case 0:
+        return <SelectSpreadsheet></SelectSpreadsheet>;
+      case 1:
+        return <SelectSheet></SelectSheet>;
+      case 2:
+        return <ConfigureTable></ConfigureTable>;
+      default:
+        return null;
+    }
+  }
+
+  function SelectSpreadsheet() {
+    return (
+      <>
+        <FilePicker
+          accessToken={props.accessToken}
+          handleSelectFile={handleSelectFile}
+        ></FilePicker>
+        {file ? (
+          <div className={classes.file}>
+            <img src={file.iconUrl} alt="" className={classes.fileIcon}></img>
+            {file.name}
+          </div>
+        ) : null}
+      </>
+    );
+  }
+
+  function SelectSheet() {
+    return (
       <FormControl className={classes.textField}>
-        <InputLabel id="demo-simple-select-label">Sheet Name</InputLabel>
+        <InputLabel id="select-sheet-label">Sheet Name</InputLabel>
         <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
+          labelId="select-sheet-label"
+          id="select-sheet"
           value={spreadsheetName}
           disabled={availableSheetNames.length === 0}
-          onChange={event => setSpreadsheetName(event.target.value as string)}
+          onChange={event => handleSelectSpreadsheet(event.target.value as string)}
         >
           {availableSheetNames.map(sheetName => (
             <MenuItem key={sheetName} value={sheetName}>
@@ -86,6 +121,11 @@ export const Setup = (props: SetupProps) => {
           ))}
         </Select>
       </FormControl>
+    );
+  }
+
+  function ConfigureTable() {
+    return (
       <Button
         variant="contained"
         color="primary"
@@ -94,7 +134,25 @@ export const Setup = (props: SetupProps) => {
       >
         Load Data
       </Button>
-    </div>
+    );
+  }
+
+  return (
+    <>
+      <h2>Create Collection</h2>
+      <Stepper activeStep={activeStep} orientation="vertical">
+        {steps.map(label => {
+          const stepProps: { completed?: boolean } = {};
+          const labelProps: { optional?: React.ReactNode } = {};
+          return (
+            <Step key={label} {...stepProps}>
+              <StepLabel {...labelProps}>{label}</StepLabel>
+              <StepContent>{getStepContent(activeStep)}</StepContent>
+            </Step>
+          );
+        })}
+      </Stepper>
+    </>
   );
 };
 
