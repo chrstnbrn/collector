@@ -1,12 +1,18 @@
-import { Button, FormControl, InputLabel, makeStyles, MenuItem, Select, TextField } from '@material-ui/core';
+import { Button, FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core';
 import React, { useState } from 'react';
 
+import { DriveFile } from '../models/drive-file';
 import { FilePicker } from './FilePicker';
 
 const useStyles = makeStyles(theme => ({
-  container: {
+  file: {
     display: 'flex',
-    flexWrap: 'wrap'
+    alignItems: 'center',
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3)
+  },
+  fileIcon: {
+    marginRight: theme.spacing(1)
   },
   textField: {
     display: 'flex',
@@ -19,14 +25,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const Setup = (props: SetupProps) => {
-  const [spreadsheetId, setSpreadsheetId] = useState('');
+  const [file, setFile] = useState<DriveFile | null>(null);
   const [spreadsheetName, setSpreadsheetName] = useState('');
   const [availableSheetNames, setAvailableSheetNames] = useState<string[]>([]);
   const classes = useStyles();
 
-  async function handleFileSelected(id: string) {
-    setSpreadsheetId(id);
-    loadSpreadsheetMetadata(id);
+  async function handleSelectFile(file: DriveFile) {
+    setFile(file);
+    loadSpreadsheetMetadata(file.id);
   }
 
   async function loadSpreadsheetMetadata(spreadsheetId: string) {
@@ -55,19 +61,15 @@ export const Setup = (props: SetupProps) => {
   return (
     <div>
       <h2>Create Collection</h2>
-      <FilePicker
-        accessToken={props.accessToken}
-        handleSelectFile={handleFileSelected}
-      ></FilePicker>
-      <TextField
-        id="spreadsheet-id"
-        className={classes.textField}
-        label="Spreadsheet Id"
-        margin="normal"
-        variant="filled"
-        value={spreadsheetId}
-        onChange={event => setSpreadsheetId(event.target.value)}
-      />
+      <h3>Select a file</h3>
+      <FilePicker accessToken={props.accessToken} handleSelectFile={handleSelectFile}></FilePicker>
+      {file ? (
+        <div className={classes.file}>
+          <img src={file.iconUrl} className={classes.fileIcon}></img>
+          {file.name}
+        </div>
+      ) : null}
+      <h3>Choose sheet</h3>
       <FormControl className={classes.textField}>
         <InputLabel id="demo-simple-select-label">Sheet Name</InputLabel>
         <Select
@@ -88,7 +90,7 @@ export const Setup = (props: SetupProps) => {
         variant="contained"
         color="primary"
         className={classes.button}
-        onClick={() => props.handleLoadData(spreadsheetId, spreadsheetName)}
+        onClick={() => props.handleLoadData(file ? file.id : '', spreadsheetName)}
       >
         Load Data
       </Button>

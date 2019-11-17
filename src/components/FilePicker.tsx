@@ -1,6 +1,8 @@
 import { Button } from '@material-ui/core';
 import React from 'react';
 
+import { DriveFile } from '../models/drive-file';
+
 export const FilePicker = (props: FilePickerProps) => {
   function openFilePicker() {
     gapi.load('picker', { callback: createPicker });
@@ -15,10 +17,16 @@ export const FilePicker = (props: FilePickerProps) => {
     }
   }
 
-  function pickerCallback({ action, docs }: { action: string; docs: { id: string }[] }) {
-    if (action === 'picked') {
-      const id = docs[0].id;
-      props.handleSelectFile(id);
+  function pickerCallback(response: any) {
+    if (response[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
+      const document = response[google.picker.Response.DOCUMENTS][0];
+      const file: DriveFile = {
+        id: document[google.picker.Document.ID],
+        name: document[google.picker.Document.NAME],
+        url: document[google.picker.Document.URL],
+        iconUrl: document[google.picker.Document.ICON_URL]
+      };
+      props.handleSelectFile(file);
     }
   }
 
@@ -33,5 +41,5 @@ export const FilePicker = (props: FilePickerProps) => {
 
 interface FilePickerProps {
   accessToken: string;
-  handleSelectFile: (id: string) => void;
+  handleSelectFile: (file: DriveFile) => void;
 }
