@@ -1,5 +1,6 @@
 import { Container } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Link, Route, Switch, useParams } from 'react-router-dom';
 
 import { createConfiguration } from '../configuration/create-configuration';
 import { getConfiguration } from '../configuration/get-configuration';
@@ -16,7 +17,6 @@ import { Setup } from './Setup';
 export function AuthenticatedApp() {
   const { signIn, signOut, getAccessToken } = useAuth();
   const [configuration, setConfiguration] = useState<CollectorConfiguration | null>(null);
-  const [collection, setCollection] = useState<Collection | null>(null);
 
   useEffect(() => {
     async function getConfig(): Promise<CollectorConfiguration> {
@@ -53,19 +53,68 @@ export function AuthenticatedApp() {
     };
     await updateConfiguration(updatedConfiguration.fileId, updatedConfiguration);
     setConfiguration(updatedConfiguration);
+  }
 
-    const accessToken = getAccessToken();
-    const collection = await loadCollection(accessToken, spreadsheetId, spreadsheetName);
-    setCollection(collection);
+  function CollectionDetails() {
+    const { id } = useParams();
+    const [collection, setCollection] = useState<Collection | null>(null);
+
+    const config = configuration && configuration.collections.find(c => c.id === id);
+
+    useEffect(() => {
+      async function load() {
+        if (!config) {
+          return;
+        }
+
+        const accessToken = getAccessToken();
+        const loadedCollection = await loadCollection(accessToken, config.id, config.sheetName);
+        setCollection(loadedCollection);
+      }
+      load();
+    }, [config]);
+
+    return collection ? <CollectionTable collection={collection}></CollectionTable> : null;
+  }
+
+  function Collections({ collections }: { collections: CollectionConfiguration[] }) {
+    return (
+      <>
+        {collections.map(collection => (
+          <Link to={'/collection/' + collection.id} key={collection.id}>
+            {collection.sheetName}
+          </Link>
+        ))}
+      </>
+    );
   }
 
   return (
-    <div className="App">
+    <Router>
       <Header isLoggedIn={true} handleLogin={signIn} handleLogout={signOut}></Header>
       <Container maxWidth="lg">
-        <Setup accessToken={getAccessToken()} handleSetupCompleted={handleSetupCompleted}></Setup>
-        {collection ? <CollectionTable collection={collection}></CollectionTable> : null}
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/create-collection">Create Collection</Link>
+            </li>
+          </ul>
+        </nav>
+        <Switch>
+          <Route path="/collection/:id">
+            <CollectionDetails />
+          </Route>
+          <Route path="/create-collection">
+            <Setup accessToken={getAccessToken()} handleSetupCompleted={handleSetupCompleted} />
+          </Route>
+          <Route path="/">
+            <Collections collections={configuration ? configuration.collections : []} />
+          </Route>
+        </Switch>
       </Container>
-    </div>
+    </Router>
   );
 }

@@ -1,6 +1,7 @@
-import { AppBar, Button, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Button, IconButton, Link, makeStyles, Toolbar, Typography } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import React from 'react';
+import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
 
 export const Header = (props: HeaderProps) => {
   const useStyles = makeStyles(theme => ({
@@ -17,6 +18,10 @@ export const Header = (props: HeaderProps) => {
 
   const classes = useStyles();
 
+  const HeaderLink = React.forwardRef<HTMLAnchorElement, RouterLinkProps>((props, ref) => (
+    <RouterLink innerRef={ref} {...props} />
+  ));
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -24,7 +29,9 @@ export const Header = (props: HeaderProps) => {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" className={classes.title}>
-          Collector
+          <Link component={HeaderLink} to="/" color="inherit" underline="none">
+            Collector
+          </Link>
         </Typography>
         {props.isLoggedIn ? (
           <Button color="inherit" onClick={() => props.handleLogout()}>
