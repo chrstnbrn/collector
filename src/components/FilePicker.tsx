@@ -12,6 +12,7 @@ export const FilePicker = (props: FilePickerProps) => {
         .setOAuthToken(props.accessToken)
         .addView(view)
         .setCallback(pickerCallback)
+        .enableFeature(google.picker.Feature.NAV_HIDDEN)
         .build();
       picker.setVisible(true);
     }
