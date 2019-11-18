@@ -130,7 +130,7 @@ export const Setup = (props: SetupProps) => {
         variant="contained"
         color="primary"
         className={classes.button}
-        onClick={() => props.handleLoadData(file ? file.id : '', spreadsheetName)}
+        onClick={() => props.handleSetupCompleted(file ? file.id : '', spreadsheetName)}
       >
         Load Data
       </Button>
@@ -158,5 +158,5 @@ export const Setup = (props: SetupProps) => {
 
 interface SetupProps {
   accessToken: string;
-  handleLoadData: (spreadsheetId: string, spreadsheetName: string) => void;
+  handleSetupCompleted: (spreadsheetId: string, spreadsheetName: string) => void;
 }

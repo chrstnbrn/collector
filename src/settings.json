@@ -1,4 +1,10 @@
 {
   "clientId": "252180289872-6cl103iaqefn5o7es1ibbi94lihnp97s.apps.googleusercontent.com",
-  "discoveryDocs": ["https://sheets.googleapis.com/$discovery/rest?version=v4"]
+  "discoveryDocs": ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+  "scopes": [
+    "https://www.googleapis.com/auth/spreadsheets.readonly",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/drive.appdata"
+  ],
+  "configFileName": "collector-config.json"
 }
