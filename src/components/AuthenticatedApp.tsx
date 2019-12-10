@@ -1,6 +1,6 @@
 import { AppBar, Container, createStyles, Drawer, Hidden, makeStyles } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, NavLink, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import { createConfiguration } from '../configuration/create-configuration';
 import { getConfiguration } from '../configuration/get-configuration';
@@ -9,6 +9,7 @@ import { useAuth } from '../context/auth-context';
 import { CollectionConfiguration } from '../models/collection-configuration';
 import { CollectorConfiguration } from '../models/collector-configuration';
 import { CollectionDetails } from './CollectionDetails';
+import { Collections } from './Collections';
 import { Header } from './Header';
 import { Setup } from './Setup';
 import { SideBar } from './SideBar';
@@ -18,7 +19,9 @@ const drawerWidth = 240;
 const useStyles = makeStyles(theme =>
   createStyles({
     root: {
-      display: 'flex'
+      display: 'flex',
+      minHeight: '100vh',
+      background: theme.palette.background.default
     },
     drawer: {
       [theme.breakpoints.up('lg')]: {
@@ -88,18 +91,6 @@ export function AuthenticatedApp() {
     };
     await updateConfiguration(updatedConfiguration.fileId, updatedConfiguration);
     setConfiguration(updatedConfiguration);
-  }
-
-  function Collections({ collections }: { collections: CollectionConfiguration[] }) {
-    return (
-      <>
-        {collections.map(collection => (
-          <NavLink to={'/collection/' + collection.id} key={collection.id}>
-            {collection.sheetName}
-          </NavLink>
-        ))}
-      </>
-    );
   }
 
   return (

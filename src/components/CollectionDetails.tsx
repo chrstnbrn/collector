@@ -1,3 +1,4 @@
+import { Card, CardContent, createStyles, makeStyles, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -7,12 +8,15 @@ import { CollectorConfiguration } from '../models/collector-configuration';
 import { loadCollection } from '../spreadsheet/load-collection';
 import { CollectionTable } from './CollectionTable';
 
-interface CollectionDetailsProps {
-  configuration: CollectorConfiguration | null;
-}
+const useStyles = makeStyles(theme =>
+  createStyles({
+    title: theme.typography.h4
+  })
+);
 
 export function CollectionDetails(props: CollectionDetailsProps) {
   const { id } = useParams();
+  const classes = useStyles();
   const [collection, setCollection] = useState<Collection | null>(null);
   const { getAccessToken } = useAuth();
 
@@ -31,5 +35,18 @@ export function CollectionDetails(props: CollectionDetailsProps) {
     load();
   }, [config, getAccessToken]);
 
-  return collection ? <CollectionTable collection={collection}></CollectionTable> : null;
+  return (
+    <Card>
+      <CardContent>
+        <Typography className={classes.title} color="textSecondary" gutterBottom>
+          {config ? config.sheetName : null}
+        </Typography>
+        {collection ? <CollectionTable collection={collection}></CollectionTable> : null}
+      </CardContent>
+    </Card>
+  );
+}
+
+interface CollectionDetailsProps {
+  configuration: CollectorConfiguration | null;
 }
