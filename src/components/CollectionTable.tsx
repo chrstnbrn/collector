@@ -13,11 +13,12 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import MaterialTable from 'material-table';
+import MaterialTable, { Column } from 'material-table';
 import React from 'react';
 import { forwardRef } from 'react';
 
 import { Collection } from '../models/collection';
+import { Entry } from '../models/entry';
 
 const tableIcons = {
   Add: forwardRef<SVGSVGElement>((props, ref) => <AddBox {...props} ref={ref} />),
@@ -46,15 +47,35 @@ export const CollectionTable = (props: CollectionTableProps) => {
       options={{
         grouping: true
       }}
-      columns={
-        props.collection ? props.collection.keys.map(key => ({ title: key, field: key })) : []
-      }
-      data={props.collection ? props.collection.entries : []}
-      title={props.collection ? props.collection.name : ''}
+      columns={props.collection?.keys.map(getColumn) || []}
+      data={props.collection?.entries || []}
+      title={props.collection?.name || ''}
       isLoading={props.isLoading}
     />
   );
 };
+
+function getColumn(key: string): Column<Entry> {
+  return {
+    title: key,
+    field: key,
+    customFilterAndSearch
+  };
+}
+
+function customFilterAndSearch(filter: string, rowData: Entry, columnDef: Column<Entry>): boolean {
+  const searchTerms = filter.split(' ');
+  const rowValues = Object.values(rowData);
+  const rowIncludesSearchTerm = (searchTerm: string) =>
+    rowValues.some(value => includesCaseInsensitive(value, searchTerm));
+  return searchTerms.every(rowIncludesSearchTerm);
+}
+
+function includesCaseInsensitive(value: string, searchString: string) {
+  return String(value)
+    .toLowerCase()
+    .includes(String(searchString).toLowerCase());
+}
 
 interface CollectionTableProps {
   collection: Collection | null;
