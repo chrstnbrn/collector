@@ -1,8 +1,10 @@
 import { Card, CardContent, createStyles, Grid, makeStyles, Typography } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import EditIcon from '@material-ui/icons/Edit';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { CollectionConfiguration } from '../models/collection-configuration';
+import { useConfiguration } from '../context/configuration-context';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -10,29 +12,29 @@ const useStyles = makeStyles(theme =>
   })
 );
 
-export function Collections(props: CollectionsProps) {
+export function Collections() {
   const classes = useStyles();
-  return (
-    <>
-      <Grid container spacing={3}>
-        {props.collections.map(collection => (
-          <Grid item xs={12} md={3}>
-            <Card key={collection.id}>
-              <CardContent>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                  <NavLink to={'/collection/' + collection.id} key={collection.id}>
-                    {collection.sheetName}
-                  </NavLink>
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </>
-  );
-}
 
-interface CollectionsProps {
-  collections: CollectionConfiguration[];
+  const { collectionConfigurations } = useConfiguration();
+
+  return (
+    <Grid container spacing={3}>
+      {collectionConfigurations.map(collection => (
+        <Grid key={collection.id} item xs={12} md={3}>
+          <Card>
+            <CardContent>
+              <Typography className={classes.title} color="textSecondary" gutterBottom>
+                <NavLink to={'/collection/' + collection.id} key={collection.id}>
+                  {collection.sheetName}
+                </NavLink>
+                <IconButton>
+                  <EditIcon />
+                </IconButton>
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  );
 }

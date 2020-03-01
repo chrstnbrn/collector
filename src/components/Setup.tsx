@@ -1,8 +1,21 @@
-import { Button, FormControl, InputLabel, makeStyles, MenuItem, Select, Step, StepContent, StepLabel, Stepper } from '@material-ui/core';
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  makeStyles,
+  MenuItem,
+  Select,
+  Step,
+  StepContent,
+  StepLabel,
+  Stepper
+} from '@material-ui/core';
 import React, { useState } from 'react';
 
 import { DriveFile } from '../models/drive-file';
 import { FilePicker } from './FilePicker';
+import { CollectionConfiguration } from '../models/collection-configuration';
+import { useConfiguration } from '../context/configuration-context';
 
 const useStyles = makeStyles(theme => ({
   file: {
@@ -29,6 +42,16 @@ function getSteps() {
 
 export const Setup = (props: SetupProps) => {
   const classes = useStyles();
+
+  const { addCollection } = useConfiguration();
+
+  async function handleSetupCompleted(spreadsheetId: string, spreadsheetName: string) {
+    const newCollection: CollectionConfiguration = {
+      id: spreadsheetId,
+      sheetName: spreadsheetName
+    };
+    addCollection(newCollection);
+  }
 
   const [file, setFile] = useState<DriveFile | null>(null);
   const [spreadsheetName, setSpreadsheetName] = useState('');
@@ -130,7 +153,7 @@ export const Setup = (props: SetupProps) => {
         variant="contained"
         color="primary"
         className={classes.button}
-        onClick={() => props.handleSetupCompleted(file ? file.id : '', spreadsheetName)}
+        onClick={() => handleSetupCompleted(file ? file.id : '', spreadsheetName)}
       >
         Load Data
       </Button>
@@ -158,5 +181,4 @@ export const Setup = (props: SetupProps) => {
 
 interface SetupProps {
   accessToken: string;
-  handleSetupCompleted: (spreadsheetId: string, spreadsheetName: string) => void;
 }

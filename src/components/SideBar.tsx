@@ -1,80 +1,62 @@
-import { Collapse, Divider, List, ListItem, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import ListIcon from '@material-ui/icons/List';
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Hidden, Drawer, makeStyles, createStyles } from '@material-ui/core';
+import { useConfiguration } from '../context/configuration-context';
+import { SideBarContent } from './SideBarContent';
 
-import { CollectionConfiguration } from '../models/collection-configuration';
+const drawerWidth = 240;
 
-const useStyles = makeStyles(theme => ({
-  toolbar: theme.mixins.toolbar,
-  nested: {
-    paddingLeft: theme.spacing(4)
-  }
-}));
+const useStyles = makeStyles(theme =>
+  createStyles({
+    drawer: {
+      [theme.breakpoints.up('lg')]: {
+        width: drawerWidth,
+        flexShrink: 0
+      }
+    },
+    drawerPaper: {
+      width: drawerWidth
+    }
+  })
+);
 
-interface Props {
-  collections: CollectionConfiguration[];
+interface SideBarProps {
+  mobileOpen: boolean;
+  handleDrawerToggle: () => void;
 }
 
-export const SideBar = (props: Props) => {
+export const SideBar = (props: SideBarProps) => {
   const classes = useStyles();
 
-  const [collectionsOpen, setCollectionsOpen] = React.useState(true);
-
-  const handleCollectionsToggle = () => {
-    setCollectionsOpen(!collectionsOpen);
-  };
+  const { collectionConfigurations } = useConfiguration();
 
   return (
-    <>
-      <div className={classes.toolbar}></div>
-      <Divider />
-      <List>
-        <ListItem
-          button
-          component={NavLink}
-          to="/collection"
-          activeClassName="Mui-selected"
-          onClick={handleCollectionsToggle}
+    <nav className={classes.drawer}>
+      <Hidden lgUp implementation="css">
+        <Drawer
+          variant="temporary"
+          open={props.mobileOpen}
+          onClose={props.handleDrawerToggle}
+          classes={{
+            paper: classes.drawerPaper
+          }}
+          ModalProps={{
+            keepMounted: true // Better open performance on mobile.
+          }}
         >
-          <ListItemIcon>
-            <ListIcon />
-          </ListItemIcon>
-          <ListItemText primary="Collections" />
-          {collectionsOpen ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
-        <Collapse in={collectionsOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            {props.collections.map(collection => (
-              <ListItem
-                button
-                key={collection.id}
-                className={classes.nested}
-                component={NavLink}
-                to={`/collection/${collection.id}`}
-                activeClassName="Mui-selected"
-              >
-                <ListItemText inset>{collection.sheetName}</ListItemText>
-              </ListItem>
-            ))}
-          </List>
-        </Collapse>
-
-        <ListItem
-          button
-          component={NavLink}
-          to={'/create-collection'}
-          activeClassName="Mui-selected"
+          <SideBarContent collections={collectionConfigurations}></SideBarContent>
+        </Drawer>
+      </Hidden>
+      <Hidden mdDown implementation="css">
+        <Drawer
+          classes={{
+            paper: classes.drawerPaper
+          }}
+          variant="permanent"
+          open
         >
-          <ListItemIcon>
-            <AddIcon />
-          </ListItemIcon>
-          <ListItemText primary="Create Collection" />
-        </ListItem>
-      </List>
-    </>
+          <SideBarContent collections={collectionConfigurations}></SideBarContent>
+        </Drawer>
+      </Hidden>
+    </nav>
   );
 };

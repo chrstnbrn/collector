@@ -2,17 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../context/auth-context';
+import { useConfiguration } from '../context/configuration-context';
 import { Collection } from '../models/collection';
-import { CollectorConfiguration } from '../models/collector-configuration';
 import { loadCollection } from '../spreadsheet/load-collection';
 import { CollectionTable } from './CollectionTable';
 
-export function CollectionDetails(props: CollectionDetailsProps) {
+export function CollectionDetails() {
   const { id } = useParams();
+  const { collectionConfigurations } = useConfiguration();
   const [collection, setCollection] = useState<Collection | null>(null);
   const { getAccessToken } = useAuth();
 
-  const config = props.configuration && props.configuration.collections.find(c => c.id === id);
+  const config = collectionConfigurations.find(c => c.id === id);
 
   useEffect(() => {
     async function load() {
@@ -28,8 +29,4 @@ export function CollectionDetails(props: CollectionDetailsProps) {
   }, [config, getAccessToken]);
 
   return <CollectionTable collection={collection} isLoading={collection == null}></CollectionTable>;
-}
-
-interface CollectionDetailsProps {
-  configuration: CollectorConfiguration | null;
 }
