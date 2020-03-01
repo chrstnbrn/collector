@@ -14,7 +14,7 @@ import ListIcon from '@material-ui/icons/List';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { CollectionConfiguration } from '../models/collection-configuration';
+import { CollectionConfiguration } from '../../models/collection-configuration';
 
 const useStyles = makeStyles(theme => ({
   toolbar: theme.mixins.toolbar,

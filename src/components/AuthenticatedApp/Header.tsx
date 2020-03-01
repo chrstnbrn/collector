@@ -1,7 +1,16 @@
-import { Button, IconButton, Link, makeStyles, Toolbar, Typography } from '@material-ui/core';
+import {
+  Button,
+  IconButton,
+  Link,
+  makeStyles,
+  Toolbar,
+  Typography,
+  AppBar
+} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import React from 'react';
 import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
+import { useAuthenticatedAppStyles } from './AuthenticatedAppStyles';
 
 export const Header = (props: HeaderProps) => {
   const useStyles = makeStyles(theme => ({
@@ -17,43 +26,38 @@ export const Header = (props: HeaderProps) => {
   }));
 
   const classes = useStyles();
+  const authenticatedAppClasses = useAuthenticatedAppStyles();
 
   const HeaderLink = React.forwardRef<HTMLAnchorElement, RouterLinkProps>((props, ref) => (
     <RouterLink innerRef={ref} {...props} />
   ));
 
   return (
-    <Toolbar>
-      <IconButton
-        edge="start"
-        className={classes.menuButton}
-        color="inherit"
-        aria-label="menu"
-        onClick={props.handleMenuIconClick}
-      >
-        <MenuIcon />
-      </IconButton>
-      <Typography variant="h6" className={classes.title}>
-        <Link component={HeaderLink} to="/" color="inherit" underline="none">
-          Collector
-        </Link>
-      </Typography>
-      {props.isLoggedIn ? (
+    <AppBar position="fixed" className={authenticatedAppClasses.appBar}>
+      <Toolbar>
+        <IconButton
+          edge="start"
+          className={classes.menuButton}
+          color="inherit"
+          aria-label="menu"
+          onClick={props.handleMenuIconClick}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" className={classes.title}>
+          <Link component={HeaderLink} to="/" color="inherit" underline="none">
+            Collector
+          </Link>
+        </Typography>
         <Button color="inherit" onClick={() => props.handleLogout()}>
           Logout
         </Button>
-      ) : (
-        <Button color="inherit" onClick={() => props.handleLogin()}>
-          Login
-        </Button>
-      )}
-    </Toolbar>
+      </Toolbar>
+    </AppBar>
   );
 };
 
 interface HeaderProps {
-  isLoggedIn: boolean;
-  handleLogin: () => void;
   handleLogout: () => void;
   handleMenuIconClick: () => void;
 }

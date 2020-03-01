@@ -1,23 +1,9 @@
+import { Drawer, Hidden } from '@material-ui/core';
 import React from 'react';
-import { Hidden, Drawer, makeStyles, createStyles } from '@material-ui/core';
-import { useConfiguration } from '../context/configuration-context';
+
+import { useConfiguration } from '../../context/configuration-context';
+import { useAuthenticatedAppStyles } from './AuthenticatedAppStyles';
 import { SideBarContent } from './SideBarContent';
-
-const drawerWidth = 240;
-
-const useStyles = makeStyles(theme =>
-  createStyles({
-    drawer: {
-      [theme.breakpoints.up('lg')]: {
-        width: drawerWidth,
-        flexShrink: 0
-      }
-    },
-    drawerPaper: {
-      width: drawerWidth
-    }
-  })
-);
 
 interface SideBarProps {
   mobileOpen: boolean;
@@ -25,7 +11,7 @@ interface SideBarProps {
 }
 
 export const SideBar = (props: SideBarProps) => {
-  const classes = useStyles();
+  const classes = useAuthenticatedAppStyles();
 
   const { collectionConfigurations } = useConfiguration();
 

@@ -16,6 +16,7 @@ import { DriveFile } from '../models/drive-file';
 import { FilePicker } from './FilePicker';
 import { CollectionConfiguration } from '../models/collection-configuration';
 import { useConfiguration } from '../context/configuration-context';
+import { useAuth } from '../context/auth-context';
 
 const useStyles = makeStyles(theme => ({
   file: {
@@ -40,9 +41,10 @@ function getSteps() {
   return ['Select spreadsheet', 'Select sheet', 'Configure table'];
 }
 
-export const Setup = (props: SetupProps) => {
+export const Setup = () => {
   const classes = useStyles();
 
+  const { getAccessToken } = useAuth();
   const { addCollection } = useConfiguration();
 
   async function handleSetupCompleted(spreadsheetId: string, spreadsheetName: string) {
@@ -82,7 +84,7 @@ export const Setup = (props: SetupProps) => {
   async function getSheetNames(spreadsheetId: string) {
     try {
       const response = await gapi.client.sheets.spreadsheets.get({
-        access_token: props.accessToken,
+        access_token: getAccessToken(),
         spreadsheetId: spreadsheetId
       });
       if (response.result.sheets) {
@@ -112,10 +114,7 @@ export const Setup = (props: SetupProps) => {
   function SelectSpreadsheet() {
     return (
       <>
-        <FilePicker
-          accessToken={props.accessToken}
-          handleSelectFile={handleSelectFile}
-        ></FilePicker>
+        <FilePicker accessToken={getAccessToken()} handleSelectFile={handleSelectFile}></FilePicker>
         {file ? (
           <div className={classes.file}>
             <img src={file.iconUrl} alt="" className={classes.fileIcon}></img>
@@ -178,7 +177,3 @@ export const Setup = (props: SetupProps) => {
     </>
   );
 };
-
-interface SetupProps {
-  accessToken: string;
-}
