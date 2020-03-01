@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
 import { useConfiguration } from '../context/configuration-context';
 import { Collection } from '../models/collection';
-import { loadCollection } from '../spreadsheet/load-collection';
+import { loadCollection } from '../services/collection-service';
 import { CollectionTable } from './CollectionTable';
 
 export function CollectionDetails() {

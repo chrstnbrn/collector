@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-import { createConfiguration } from '../configuration/create-configuration';
-import { updateConfiguration } from '../configuration/update-configuration';
-import { getConfiguration } from '../configuration/get-configuration';
+import {
+  getConfiguration,
+  createConfiguration,
+  updateConfiguration
+} from '../services/collector-configuration-service';
 import { CollectorConfiguration } from '../models/collector-configuration';
 import { CollectionConfiguration } from '../models/collection-configuration';
 
